@@ -13,9 +13,14 @@ class SM:
         Args:
             transport_manager (TransportManager): The TransportManager object to associate with SM.
         """
-        self.transport_manager = transport_manager
-        self.transports_roads = [transport.roads_set for transport in self.transport_manager.transports]
-        self.current = -1
+        try:
+            self.transports_roads = [road for transport in transport_manager.transports for road in transport.roads_set]
+        except TypeError:
+            print('Transport roads_set is empty')  
+        self.__current = -1
+
+    
+
     def __iter__(self):
         """
         Returns the iterator object for SM.
@@ -24,6 +29,8 @@ class SM:
             SM: The iterator object.
         """
         return self
+    
+    
     def __len__(self):
         """
         Get the number of transports' road sets in SM.
@@ -32,6 +39,8 @@ class SM:
             int: The number of transports' road sets.
         """
         return len(self.transports_roads)
+    
+
     def __getitem__(self, index):
         """
         Get the road set at the specified index.
@@ -42,7 +51,12 @@ class SM:
         Returns:
             set: The road set at the specified index.
         """
-        return self.transports_roads[index]
+        try:
+            return self.transports_roads[index]
+        except IndexError:
+            print('Invalid index')
+    
+
     def __next__(self):
         """
         Get the next road set in SM.
@@ -53,7 +67,8 @@ class SM:
         Raises:
             StopIteration: If there are no more road sets.
         """
-        self.current += 1
-        if self.current >= len(self.transports_roads):
+        self.__current += 1
+        if self.__current >= len(self.transports_roads):
             raise StopIteration
-        return self.transports_roads[self.current]
+        return self.transports_roads[self.__current]
+    
